@@ -1,6 +1,5 @@
 require('dotenv').config();
 const httpStatus = require('http-status');
-// const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 const ApiError = require('../utils/ApiError');
@@ -15,11 +14,11 @@ const registerUser = async (userBody) => {
 };
 
 const loginUser = async (email, password) => {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email, password });
     if (!user) {
-        throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
+        throw new ApiError(httpStatus.UNAUTHORIZED, 'Invalid credentials');
     }
-    const token = jwt.sign({ id: user.id, Name: user.first_name, Email: user.email, Role: user.role }, process.env.JWT_SECRET, { expiresIn: '3h' });
+    const token = jwt.sign({ id: user.id, Name: user.first_name }, process.env.JWT_SECRET, { expiresIn: '3h' });
     return { user, token };
 }
 
